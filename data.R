@@ -59,7 +59,7 @@ ggsave("data/catch_relative.png", width=12, height=6)
 effort <- read.taf("bootstrap/data/effort.csv")
 effort <- pivot_longer(effort, !Year, "stock", values_to="effort")
 names(effort) <- tolower(names(effort))
-catch_effort <- addEffort(catch, effort, same.effort=TRUE)
+catch_effort <- addEffort(catch, effort, same.effort=FALSE)
 
 ## Create nested tibble with 'data' column (catch and effort)
 stocks <- catch_effort %>%
