@@ -1,72 +1,69 @@
 ## Prepare plots and tables for report
 
-## Before: results.rds (model), current_status.csv,
-##         stock_timeseries.csv (output)
-## After:  bbmsy.png, cpue_1.png, driors_1.png, posterior_1.png,
-##         status_by_year.png, status_sofia.png, status_sraplus.png,
-##         stock_posterior.pdf, stock_timeseries.pdf (report)
+## Before: sofia20_proportions.csv (bootstrap/data), results.rds (model),
+##         current_status.csv, stock_timeseries.csv (output)
+## After:  bbmsy.png, status_by_year.png, status_sofia.png, status_sraplus.png,
+##         stock_cpue.pdf, stock_posterior.pdf, stock_timeseries.pdf (report)
 
 library(TAF)
-library(dplyr)        # mutate
-library(egg)          # ggarrange
+taf.library(SOFIA)
+suppressMessages(library(egg))   # ggarrange
 library(ggplot2)
-library(purrr)        # map2, walk2
-library(sraplus)      # plot_driors, plot_prior_posterior, plot_sraplus
-source("utilities.R") # plotProp
+library(sraplus) # plot_prior_posterior, plot_sraplus
 
 mkdir("report")
 
 stocks <- readRDS("model/results.rds")
 
-## Plot data and priors, posteriors, and CPUE
-plot_driors(stocks$driors[[1]])
-ggsave("report/driors_1.png")
-plot_prior_posterior(stocks$sraplus_fit[[1]], stocks$driors[[1]])
-ggsave("report/posterior_1.png")
-taf.png("cpue_1")
-with(stocks$driors[[1]], plot(catch[years %in% effort_years] / effort))
+## Plot CPUE
+pdf("report/stock_cpue.pdf")
+for(i in seq_len(nrow(stocks)))
+{
+  x <- stocks$driors[[i]]$effort_years
+  y <- with(stocks$driors[[i]], catch[years %in% x] / effort)
+  plot(x, y, ylim=lim(y), main=stocks$stock[i], xlab="", ylab="CPUE", type="l")
+}
 dev.off()
 
 ## Barplots of stock status
 taf.png("status_sraplus")
 current_status <- read.taf("output/current_status.csv")
 current_status$status <- ordered(current_status$status,
-                                 c("underfished","fully fished","overfished"))
-barplot(prop.table(table(current_status$status)), col=c("green","yellow","red"))
+                                 c("Underfished","Fully fished","Overfished"))
+barplot(prop.table(table(current_status$status)), col=c(3,7,2), ylim=0:1,
+        xlab="Category", ylab="Proportion")
 dev.off()
 taf.png("status_sofia")
 results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
 results_sofia$Category <- ordered(results_sofia$Category,
                                   c("Underfished","Fully fished","Overfished"))
-barplot(Proportion~Category, results_sofia, col=c("green","yellow","red"))
+barplot(Proportion~Category, results_sofia, col=c(3,7,2), ylim=0:1)
 dev.off()
 
 ## Plot posteriors and time series for each stock
-stocks <- stocks %>%
-  mutate(plot_prior_posterior_plot=
-           map2(sraplus_fit, driors, plot_prior_posterior))
-savefoo <- function(stock, plot) print(plot + labs(title=stock))
 pdf("report/stock_posterior.pdf")
-walk2(stocks$stock, stocks$plot_prior_posterior_plot, savefoo)
+for(i in seq_len(nrow(stocks)))
+{
+  p <- plot_prior_posterior(stocks$sraplus_fit[[i]], stocks$driors[[i]])
+  suppressWarnings(print(p + ggtitle(stocks$stock[i])))
+}
 dev.off()
-stocks <- stocks %>%
-  mutate(sraplus_fit_plot = map(sraplus_fit, plot_sraplus))
-savefoo <- function(stock, plot) print(plot + labs(title=stock))
 pdf("report/stock_timeseries.pdf")
-walk2(stocks$stock, stocks$sraplus_fit_plot, savefoo)
+for(i in seq_len(nrow(stocks)))
+  print(plot_sraplus(stocks$sraplus_fit[[i]]) + ggtitle(stocks$stock[i]))
 dev.off()
 
 ## Plot time series for each stock
-newResTab <- read.taf("output/stock_timeseries.csv")
+stock.timeseries <- read.taf("output/stock_timeseries.csv")
 taf.png("status_by_year")
-p1 <- plotProp(newResTab, method="effEdepP", cats=3, type="prop")
-p2 <- plotProp(newResTab, method="effEdepP", cats=3, type="all")
+p1 <- plotCat(stock.timeseries, method="effEdepP", cats=3, type="count")
+p2 <- plotCat(stock.timeseries, method="effEdepP", cats=3, type="stock")
 ggarrange(p1, p2, ncol=1)
 dev.off()
 
 ## Overlay B/Bmsy time series of all stocks in a single plot
-ggplot(newResTab, aes(x=yr, y=bbmsy, colour=Stock, group=Stock)) +
+ggplot(stock.timeseries, aes(x=year, y=bbmsy, colour=stock, group=stock)) +
   geom_line(show.legend=TRUE) +
   geom_hline(yintercept=0.8, linetype="dashed", color="red", size=2) +
   geom_hline(yintercept=1.2, linetype="dashed", color="green", size=2)
-ggsave("report/bbmsy.png")
+ggsave("report/bbmsy.png", width=12, height=6)
