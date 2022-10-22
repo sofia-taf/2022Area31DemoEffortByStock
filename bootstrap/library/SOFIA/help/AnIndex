@@ -1,0 +1,13 @@
+SOFIA-package	SOFIA-package
+addDriors	addDriors
+addEffort	addEffort
+calcCat	calcCat
+compCat	calcCat
+convertData	convertData
+gitClone	gitClone
+gitCloneAll	gitCloneAll
+gitRepos	gitRepos
+groupData	groupData
+plotCat	plotCat
+plotProp	plotCat
+SOFIA	SOFIA-package

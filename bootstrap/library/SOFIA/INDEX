@@ -1,0 +1,10 @@
+SOFIA-package           Tools to Work with SOFIA Analyses
+addDriors               Add Driors
+addEffort               Add Effort
+calcCat                 Calculate Categories
+convertData             Convert Data
+gitClone                gitClone
+gitCloneAll             gitCloneAll
+gitRepos                gitRepos
+groupData               Group Data
+plotCat                 Plot Categories
