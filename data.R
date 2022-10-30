@@ -44,7 +44,7 @@ viable_stocks <- catch %>%
 catch <- catch %>%
   filter(stock %in% viable_stocks$stock) %>%
   group_by(stock) %>%
-  filter(year > min(year[capture > 0]),
+  filter(year >= min(year[capture > 0]),
          year <= max(year[capture > 0]))
 
 ## Plot relative catch
