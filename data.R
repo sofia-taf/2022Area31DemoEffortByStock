@@ -37,15 +37,15 @@ ggsave("data/catch_by_stock.png", width=12, height=6)
 ## Select stocks with min 10 years of non-zero catches...
 viable_stocks <- catch %>%
   group_by(stock) %>%
-  summarise(n_pos_catch=sum(capture > 0)) %>%
+  summarise(n_pos_catch=sum(capture > 0.1)) %>%
   filter(n_pos_catch > 10)
 
 ## ...and discard zero-catch years at the beginning or end of series
 catch <- catch %>%
   filter(stock %in% viable_stocks$stock) %>%
   group_by(stock) %>%
-  filter(year >= min(year[capture > 0]),
-         year <= max(year[capture > 0]))
+  filter(year >= min(year[capture > 0.1]),
+         year <= max(year[capture > 0.1]))
 
 ## Plot relative catch
 catch %>%
