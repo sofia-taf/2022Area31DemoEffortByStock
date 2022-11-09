@@ -4,9 +4,9 @@
 ## After:  results.rds (model)
 
 library(TAF)
-suppressMessages(library(dplyr)) # filter, mutate, sample_n, ungroup
-library(purrr)   # map, map_lgl, safely
-library(sraplus) # diagnose_sraplus, fit_sraplus, summarize_sralpus
+suppressMessages(library(dplyr))  # arrange, filter, mutate, sample_n, ungroup
+library(purrr)    # map, map_lgl, safely
+library(sraplus)  # diagnose_sraplus, fit_sraplus, summarize_sralpus
 
 mkdir("model")
 

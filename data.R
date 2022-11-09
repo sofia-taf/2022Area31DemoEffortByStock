@@ -6,10 +6,10 @@
 
 library(TAF)
 taf.library(SOFIA)
-suppressMessages(library(dplyr)) # filter, group_by, left_join, mutate, ...
-library(ggplot2)
-library(sraplus) # plot_driors
-library(tidyr)   # nest, pivot_longer
+suppressMessages(library(dplyr))  # filter, group_by, mutate, summarise, ungroup
+library(ggplot2)  # aes, geom_line, geom_point, ggplot, ggsave, ggtitle
+library(sraplus)  # plot_driors
+library(tidyr)    # nest, pivot_longer
 
 mkdir("data")
 

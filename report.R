@@ -7,9 +7,9 @@
 
 library(TAF)
 taf.library(SOFIA)
-suppressMessages(library(egg))   # ggarrange
-library(ggplot2)
-library(sraplus) # plot_prior_posterior, plot_sraplus
+suppressMessages(library(egg))  # ggarrange
+library(ggplot2)  # gghline, ggline, ggplot, ggsave, ggtitle
+library(sraplus)  # plot_prior_posterior, plot_sraplus
 
 mkdir("report")
 
