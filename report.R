@@ -8,7 +8,7 @@
 library(TAF)
 taf.library(SOFIA)
 suppressMessages(library(egg))  # ggarrange
-library(ggplot2)  # ggplot, ggsave, ggtitle
+library(ggplot2)  # geom_hline, geom_line, ggplot, ggsave, ggtitle
 library(sraplus)  # plot_prior_posterior, plot_sraplus
 
 mkdir("report")
@@ -63,6 +63,6 @@ dev.off()
 ## Overlay B/Bmsy time series of all stocks in a single plot
 ggplot(stock.timeseries, aes(x=year, y=bbmsy, colour=stock, group=stock)) +
   geom_line(show.legend=TRUE) +
-  geom_hline(yintercept=0.8, linetype="dashed", color="red", size=2) +
-  geom_hline(yintercept=1.2, linetype="dashed", color="green", size=2)
+  geom_hline(yintercept=0.8, linetype="dashed", color="red", linewidth=2) +
+  geom_hline(yintercept=1.2, linetype="dashed", color="green", linewidth=2)
 ggsave("report/bbmsy.png", width=12, height=6)
