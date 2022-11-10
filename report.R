@@ -8,12 +8,13 @@
 library(TAF)
 taf.library(SOFIA)
 suppressMessages(library(egg))  # ggarrange
-library(ggplot2)  # gghline, ggline, ggplot, ggsave, ggtitle
+library(ggplot2)  # ggplot, ggsave, ggtitle
 library(sraplus)  # plot_prior_posterior, plot_sraplus
 
 mkdir("report")
 
 stocks <- readRDS("model/results.rds")
+levels <- c("Underfished", "Fully fished", "Overfished")
 
 ## Plot CPUE
 pdf("report/stock_cpue.pdf")
@@ -28,15 +29,13 @@ dev.off()
 ## Barplots of stock status
 taf.png("status_sraplus")
 current_status <- read.taf("output/current_status.csv")
-current_status$status <- ordered(current_status$status,
-                                 c("Underfished","Fully fished","Overfished"))
+current_status$status <- ordered(current_status$status, levels=levels)
 barplot(prop.table(table(current_status$status)), col=c(3,7,2), ylim=0:1,
         xlab="Category", ylab="Proportion")
 dev.off()
 taf.png("status_sofia")
 results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
-results_sofia$Category <- ordered(results_sofia$Category,
-                                  c("Underfished","Fully fished","Overfished"))
+results_sofia$Category <- ordered(results_sofia$Category, levels=levels)
 barplot(Proportion~Category, results_sofia, col=c(3,7,2), ylim=0:1)
 dev.off()
 
