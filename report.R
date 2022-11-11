@@ -17,11 +17,11 @@ mkdir("report")
 ## Establish factor order
 levels <- c("Underfished", "Fully fished", "Overfished")
 
-results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
 stocks <- readRDS("model/results.rds")
-current_status <- read.taf("output/current_status.csv")
-current_status$status <- ordered(current_status$status, levels=levels)
 stock.timeseries <- read.taf("output/stock_timeseries.csv")
+current_status <- read.taf("output/current_status.csv")
+results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
+current_status$status <- ordered(current_status$status, levels=levels)
 results_sofia$Category <- ordered(results_sofia$Category, levels=levels)
 
 ## B over Bmsy
