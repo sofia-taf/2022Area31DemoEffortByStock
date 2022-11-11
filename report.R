@@ -2,8 +2,9 @@
 
 ## Before: sofia20_proportions.csv (bootstrap/data), results.rds (model),
 ##         current_status.csv, stock_timeseries.csv (output)
-## After:  bbmsy.png, status_by_year.png, status_sofia.png, status_sraplus.png,
-##         stock_cpue.pdf, stock_posterior.pdf, stock_timeseries.pdf (report)
+## After:  b_over_bmsy.png, status_count.png, status_proportion.png,
+##         status_summary.png, stock_cpue.pdf, stock_posterior.pdf,
+##         stock_timeseries.pdf (report)
 
 library(TAF)
 taf.library(SOFIA)
@@ -13,10 +14,43 @@ library(sraplus)  # plot_prior_posterior, plot_sraplus
 
 mkdir("report")
 
-stocks <- readRDS("model/results.rds")
+## Establish factor order
 levels <- c("Underfished", "Fully fished", "Overfished")
 
-## Plot CPUE
+results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
+stocks <- readRDS("model/results.rds")
+current_status <- read.taf("output/current_status.csv")
+current_status$status <- ordered(current_status$status, levels=levels)
+stock.timeseries <- read.taf("output/stock_timeseries.csv")
+results_sofia$Category <- ordered(results_sofia$Category, levels=levels)
+
+## B over Bmsy
+ggplot(stock.timeseries, aes(x=year, y=bbmsy, colour=stock, group=stock)) +
+  geom_line(show.legend=TRUE) +
+  geom_hline(yintercept=0.8, linetype="dashed", color="red", linewidth=2) +
+  geom_hline(yintercept=1.2, linetype="dashed", color="green", linewidth=2)
+ggsave("report/b_over_bmsy.png", width=12, height=6)
+
+## Status count and proportion
+taf.png("status_count")
+p1 <- plotCat(stock.timeseries, method="effEdepP", cats=3, type="count")
+p2 <- plotCat(stock.timeseries, method="effEdepP", cats=3, type="stock")
+ggarrange(p1, p2, ncol=1)
+dev.off()
+taf.png("status_proportion", width=1800, height=1000)
+plotCat(stock.timeseries, method="effEdepP", cats=3, type="prop")
+dev.off()
+
+## Status summary: current analysis and last SOFIA
+taf.png("status_summary", width=1800, height=1000)
+par(mfrow=c(1,2))
+barplot(Proportion~Category, results_sofia, col=c(3,7,2), ylim=c(0,1),
+        xlab="Last SOFIA")
+barplot(prop.table(table(current_status$status)), col=c(3,7,2), ylim=c(0,1),
+        xlab="Current analysis", ylab="Proportion")
+dev.off()
+
+## CPUE
 pdf("report/stock_cpue.pdf")
 for(i in seq_len(nrow(stocks)))
 {
@@ -26,20 +60,7 @@ for(i in seq_len(nrow(stocks)))
 }
 dev.off()
 
-## Barplots of stock status
-taf.png("status_sraplus")
-current_status <- read.taf("output/current_status.csv")
-current_status$status <- ordered(current_status$status, levels=levels)
-barplot(prop.table(table(current_status$status)), col=c(3,7,2), ylim=0:1,
-        xlab="Category", ylab="Proportion")
-dev.off()
-taf.png("status_sofia")
-results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
-results_sofia$Category <- ordered(results_sofia$Category, levels=levels)
-barplot(Proportion~Category, results_sofia, col=c(3,7,2), ylim=0:1)
-dev.off()
-
-## Plot posteriors and time series for each stock
+## Stock posteriors, along with data and priors
 pdf("report/stock_posterior.pdf")
 for(i in seq_len(nrow(stocks)))
 {
@@ -47,22 +68,9 @@ for(i in seq_len(nrow(stocks)))
   suppressWarnings(print(p + ggtitle(stocks$stock[i])))
 }
 dev.off()
+
+## Stock time series
 pdf("report/stock_timeseries.pdf")
 for(i in seq_len(nrow(stocks)))
   print(plot_sraplus(stocks$sraplus_fit[[i]]) + ggtitle(stocks$stock[i]))
 dev.off()
-
-## Plot time series for each stock
-stock.timeseries <- read.taf("output/stock_timeseries.csv")
-taf.png("status_by_year")
-p1 <- plotCat(stock.timeseries, method="effEdepP", cats=3, type="count")
-p2 <- plotCat(stock.timeseries, method="effEdepP", cats=3, type="stock")
-ggarrange(p1, p2, ncol=1)
-dev.off()
-
-## Overlay B/Bmsy time series of all stocks in a single plot
-ggplot(stock.timeseries, aes(x=year, y=bbmsy, colour=stock, group=stock)) +
-  geom_line(show.legend=TRUE) +
-  geom_hline(yintercept=0.8, linetype="dashed", color="red", linewidth=2) +
-  geom_hline(yintercept=1.2, linetype="dashed", color="green", linewidth=2)
-ggsave("report/bbmsy.png", width=12, height=6)
