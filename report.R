@@ -20,9 +20,9 @@ levels <- c("Underfished", "Fully fished", "Overfished")
 stocks <- readRDS("model/results.rds")
 stock.timeseries <- read.taf("output/stock_timeseries.csv")
 current_status <- read.taf("output/current_status.csv")
-results_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
+last_sofia <- read.taf("bootstrap/data/sofia20_proportions.csv")
 current_status$status <- ordered(current_status$status, levels=levels)
-results_sofia$Category <- ordered(results_sofia$Category, levels=levels)
+last_sofia$Category <- ordered(last_sofia$Category, levels=levels)
 
 ## B over Bmsy
 ggplot(stock.timeseries, aes(x=year, y=bbmsy, colour=stock, group=stock)) +
@@ -44,7 +44,7 @@ dev.off()
 ## Status summary: current analysis and last SOFIA
 taf.png("status_summary", width=1800, height=1000)
 par(mfrow=c(1,2))
-barplot(Proportion~Category, results_sofia, col=c(3,7,2), ylim=c(0,1),
+barplot(Proportion~Category, last_sofia, col=c(3,7,2), ylim=c(0,1),
         xlab="Last SOFIA")
 barplot(prop.table(table(current_status$status)), col=c(3,7,2), ylim=c(0,1),
         xlab="Current analysis", ylab="Proportion")
