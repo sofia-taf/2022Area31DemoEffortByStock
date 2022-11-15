@@ -1,6 +1,7 @@
 SOFIA-package	SOFIA-package
 addDriors	addDriors
 addEffort	addEffort
+addIndex	addIndex
 calcCat	calcCat
 compCat	calcCat
 convertData	convertData

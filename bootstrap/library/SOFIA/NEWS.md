@@ -1,9 +1,30 @@
+# SOFIA 2.1.1 (2022-11-15)
+
+* Removed dependency on areaplot package.
+
+
+
+
+# SOFIA 2.1.0 (2022-11-11)
+
+* Added function addIndex() to add index column to catch data.
+
+* Added plotCat() 'type' option "prop" to draw a proportional area plot. Dropped
+  legacy support for 'type' option "all".
+
+* Improved addDriors() so it passes 'shape_prior' and 'growth_rate_prior_cv' to
+  format_driors().
+
+
+
+
 # SOFIA 2.0.0 (2022-08-08)
 
 * Added functions gitRepos(), gitClone(), and gitCloneAll() to list and clone
   GitHub repositories.
 
 * Dropped legacy support for 'stocks.combined' in addDriors() and addEffort().
+  Use 'same.priors' and 'same.effort' instead.
 
 * Added errors and warnings if stock names in catch/effort/priors don't match.
 
