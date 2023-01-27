@@ -13,7 +13,7 @@ library(tidyr)    # nest
 
 mkdir("data")
 
-## Read catch data, convert to tibble (long format)
+## Read catch data, convert to long format
 catch <- read.taf("bootstrap/data/catch.csv")
 catch$Total <- NULL  # not used, not a stock
 catch <- taf2long(catch, c("year", "stock", "capture"))
